@@ -15,7 +15,7 @@ path = "src/main.rs"
 
 [dependencies]
 # Discord bot framework
-serenity = { version = "0.12", default-features = false, features = ["client", "gateway", "rustls_backend", "model", "builder", "http"] }
+serenity = { version = "0.12", default-features = false, features = ["client", "gateway", "rustls_backend", "model", "builder", "http", "cache"] }
 
 # Async runtime
 tokio = { version = "1", features = ["full"] }
@@ -46,4 +46,4 @@ thiserror = "2.0"
 once_cell = "1.19"
 parking_lot = "0.12"
 regex = "1.10"
-async-trait = "0.1"
+async-trait = "0.1.77"

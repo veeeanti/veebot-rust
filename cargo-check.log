@@ -1,0 +1,2839 @@
+    Blocking waiting for file lock on build directory
+    Checking veebot v1.0.0 (C:\Users\mikek\veebot-rust)
+error[E0433]: failed to resolve: could not find `PgPoolOptions` in `sqlx`
+  --> src\postgres.rs:17:26
+   |
+17 |         let pool = sqlx::PgPoolOptions::new()
+   |                          ^^^^^^^^^^^^^ could not find `PgPoolOptions` in `sqlx`
+
+warning: unused import: `ContextMessage`
+ --> src\ai.rs:4:38
+  |
+4 | use crate::context::{ContextManager, ContextMessage};
+  |                                      ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:50:19
+    |
+ 50 | impl Database for SqliteDatabase {
+    |                   ^^^^^^^^^^^^^^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+note: required by a bound in `database::Database`
+   --> src\database.rs:92:28
+    |
+ 92 | pub trait Database: Send + Sync {
+    |                            ^^^^ required by this bound in `Database`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:50:19
+    |
+ 50 | impl Database for SqliteDatabase {
+    |                   ^^^^^^^^^^^^^^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+note: required by a bound in `database::Database`
+   --> src\database.rs:92:28
+    |
+ 92 | pub trait Database: Send + Sync {
+    |                            ^^^^ required by this bound in `Database`
+
+error[E0063]: missing field `similarity` in initializer of `ContextMessage`
+   --> src\context.rs:263:34
+    |
+263 |                     context.push(ContextMessage {
+    |                                  ^^^^^^^^^^^^^^ missing `similarity`
+
+error[E0063]: missing field `similarity` in initializer of `ContextMessage`
+   --> src\context.rs:307:24
+    |
+307 |             .map(|msg| ContextMessage {
+    |                        ^^^^^^^^^^^^^^ missing `similarity`
+
+error[E0599]: no function or associated item named `from_str` found for struct `PgConnectOptions` in the current scope
+  --> src\postgres.rs:14:57
+   |
+14 |         let options = sqlx::postgres::PgConnectOptions::from_str(url)
+   |                                                         ^^^^^^^^ function or associated item not found in `PgConnectOptions`
+   |
+note: if you're trying to build a new `PgConnectOptions` consider using one of the following associated functions:
+      PgConnectOptions::new
+      PgConnectOptions::new_without_pgpass
+  --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-postgres-0.8.6\src\options\mod.rs:47:5
+   |
+47 |     pub fn new() -> Self {
+   |     ^^^^^^^^^^^^^^^^^^^^
+...
+56 |     pub fn new_without_pgpass() -> Self {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = help: items from traits can only be used if the trait is in scope
+help: trait `FromStr` which provides `from_str` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use std::str::FromStr;
+   |
+help: there is an associated function `from` with a similar name
+   |
+14 -         let options = sqlx::postgres::PgConnectOptions::from_str(url)
+14 +         let options = sqlx::postgres::PgConnectOptions::from(url)
+   |
+
+error[E0282]: type annotations needed
+  --> src\postgres.rs:15:23
+   |
+15 |             .map_err(|e| DatabaseError::Connection(e.to_string()))?;
+   |                       ^                            - type must be known at this point
+   |
+help: consider giving this closure parameter an explicit type
+   |
+15 |             .map_err(|e: /* Type */| DatabaseError::Connection(e.to_string()))?;
+   |                        ++++++++++++
+
+error[E0282]: type annotations needed
+  --> src\postgres.rs:17:20
+   |
+17 |           let pool = sqlx::PgPoolOptions::new()
+   |  ____________________^
+18 | |             .max_connections(20)
+19 | |             .idle_timeout(std::time::Duration::from_secs(30))
+20 | |             .connect_timeout(std::time::Duration::from_secs(10))
+21 | |             .connect_with(options)
+22 | |             .await
+   | |__________________^ cannot infer type
+
+error[E0282]: type annotations needed
+  --> src\postgres.rs:23:23
+   |
+23 |             .map_err(|e| DatabaseError::Connection(e.to_string()))?;
+   |                       ^                            - type must be known at this point
+   |
+help: consider giving this closure parameter an explicit type
+   |
+23 |             .map_err(|e: /* Type */| DatabaseError::Connection(e.to_string()))?;
+   |                        ++++++++++++
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:82:21
+   |
+82 |             id: row.get(0),
+   |                     ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:83:37
+   |
+83 |             discord_message_id: row.get(1),
+   |                                     ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:84:26
+   |
+84 |             content: row.get(2),
+   |                          ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:85:28
+   |
+85 |             author_id: row.get(3),
+   |                            ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:86:30
+   |
+86 |             author_name: row.get(4),
+   |                              ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:87:37
+   |
+87 |             message_type: match row.get::<_, String>(5).as_str() {
+   |                                     ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:91:27
+   |
+91 |             guild_id: row.get(6),
+   |                           ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:92:29
+   |
+92 |             channel_id: row.get(7),
+   |                             ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:93:29
+   |
+93 |             created_at: row.get(8),
+   |                             ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+  --> src\postgres.rs:94:29
+   |
+94 |             updated_at: row.get(9),
+   |                             ^^^ method not found in `PgRow`
+   |
+  ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+   |
+68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+   |        --- the method is available for `PgRow` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use sqlx::Row;
+   |
+
+error[E0599]: the method `as_ref` exists for reference `&dyn sqlx::Encode<'_, Postgres>`, but its trait bounds were not satisfied
+   --> src\postgres.rs:127:51
+    |
+127 |             builder = builder.bind(param.as_ref().as_ref());
+    |                                                   ^^^^^^ method cannot be called on `&dyn sqlx::Encode<'_, Postgres>` due to unsatisfied trait bounds
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\encode.rs:27:1
+    |
+ 27 | pub trait Encode<'q, DB: Database> {
+    | ---------------------------------- doesn't satisfy `dyn sqlx::Encode<'_, Postgres>: AsRef<_>`
+    |
+    = note: the following trait bounds were not satisfied:
+            `dyn sqlx::Encode<'_, Postgres>: AsRef<_>`
+            which is required by `&dyn sqlx::Encode<'_, Postgres>: AsRef<_>`
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:248:21
+    |
+248 |             id: row.get(0),
+    |                     ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:249:26
+    |
+249 |             user_id: row.get(1),
+    |                          ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:250:27
+    |
+250 |             username: row.get(2),
+    |                           ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:251:25
+    |
+251 |             memory: row.get(3),
+    |                         ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:252:27
+    |
+252 |             guild_id: row.get(4),
+    |                           ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:253:29
+    |
+253 |             channel_id: row.get(5),
+    |                             ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:254:29
+    |
+254 |             created_at: row.get(6),
+    |                             ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0599]: no method named `get` found for struct `PgRow` in the current scope
+   --> src\postgres.rs:255:29
+    |
+255 |             updated_at: row.get(7),
+    |                             ^^^ method not found in `PgRow`
+    |
+   ::: C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sqlx-core-0.8.6\src\row.rs:68:8
+    |
+ 68 |     fn get<'r, T, I>(&'r self, index: I) -> T
+    |        --- the method is available for `PgRow` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Row` which provides `get` is implemented but not in scope; perhaps you want to import it
+    |
+  3 + use sqlx::Row;
+    |
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:52:30
+    |
+ 52 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+ 53 | |             self.conn.query_row(
+ 54 | |                 "SELECT datetime('now') as current_time",
+ 55 | |                 [],
+...   |
+ 58 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:52:30
+    |
+ 52 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:52:30
+    |
+ 52 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+ 53 | |             self.conn.query_row(
+ 54 | |                 "SELECT datetime('now') as current_time",
+ 55 | |                 [],
+...   |
+ 58 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:52:30
+    |
+ 52 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:65:30
+    |
+ 65 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+ 66 | |             self.execute_schema()
+ 67 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:65:30
+    |
+ 65 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:65:30
+    |
+ 65 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+ 66 | |             self.execute_schema()
+ 67 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:65:30
+    |
+ 65 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:110:49
+    |
+110 | ...                   created_at: row.get(8)?,
+    |                                       ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:111:49
+    |
+111 | ...                   updated_at: row.get(9)?,
+    |                                       ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `?` couldn't convert the error to `database::DatabaseError`
+   --> src\sqlite.rs:115:32
+    |
+115 |                     Ok(Some(row?))
+    |                             ---^ the trait `From<rusqlite::Error>` is not implemented for `database::DatabaseError`
+    |                             |
+    |                             this can't be annotated with `?` because it has type `Result<_, rusqlite::Error>`
+    |
+note: `database::DatabaseError` needs to implement `From<rusqlite::Error>`
+   --> src\database.rs:15:1
+    |
+ 15 | pub enum DatabaseError {
+    | ^^^^^^^^^^^^^^^^^^^^^^
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:167:37
+    |
+167 |                     created_at: row.get(8)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:168:37
+    |
+168 |                     updated_at: row.get(9)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:224:37
+    |
+224 |                     created_at: row.get(8)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:225:37
+    |
+225 |                     updated_at: row.get(9)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:264:37
+    |
+264 |                     created_at: row.get(8)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:265:37
+    |
+265 |                     updated_at: row.get(9)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:280:30
+    |
+280 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+281 | |             let result = self.conn.execute(
+282 | |                 "DELETE FROM messages WHERE created_at < datetime('now', ?) AND message_type = 'user'",
+283 | |                 params![format!("-{} days", days_old)],
+284 | |             );
+285 | |             Ok(result.map(|c| c as u64).unwrap_or(0))
+286 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:280:30
+    |
+280 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:280:30
+    |
+280 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+281 | |             let result = self.conn.execute(
+282 | |                 "DELETE FROM messages WHERE created_at < datetime('now', ?) AND message_type = 'user'",
+283 | |                 params![format!("-{} days", days_old)],
+284 | |             );
+285 | |             Ok(result.map(|c| c as u64).unwrap_or(0))
+286 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:280:30
+    |
+280 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:316:49
+    |
+316 | ...                   created_at: row.get(6)?,
+    |                                       ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:317:49
+    |
+317 | ...                   updated_at: row.get(7)?,
+    |                                       ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `?` couldn't convert the error to `database::DatabaseError`
+   --> src\sqlite.rs:321:32
+    |
+321 |                     Ok(Some(row?))
+    |                             ---^ the trait `From<rusqlite::Error>` is not implemented for `database::DatabaseError`
+    |                             |
+    |                             this can't be annotated with `?` because it has type `Result<_, rusqlite::Error>`
+    |
+note: `database::DatabaseError` needs to implement `From<rusqlite::Error>`
+   --> src\database.rs:15:1
+    |
+ 15 | pub enum DatabaseError {
+    | ^^^^^^^^^^^^^^^^^^^^^^
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:357:37
+    |
+357 |                     created_at: row.get(6)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:358:37
+    |
+358 |                     updated_at: row.get(7)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:410:37
+    |
+410 |                     created_at: row.get(6)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:411:37
+    |
+411 |                     updated_at: row.get(7)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:428:30
+    |
+428 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+429 | |             let result = self.conn.execute(
+430 | |                 "DELETE FROM memories WHERE id = ? AND user_id = ?",
+431 | |                 params![memory_id, user_id],
+432 | |             );
+433 | |             Ok(result.map(|c| c > 0).unwrap_or(false))
+434 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:428:30
+    |
+428 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:428:30
+    |
+428 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+429 | |             let result = self.conn.execute(
+430 | |                 "DELETE FROM memories WHERE id = ? AND user_id = ?",
+431 | |                 params![memory_id, user_id],
+432 | |             );
+433 | |             Ok(result.map(|c| c > 0).unwrap_or(false))
+434 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:428:30
+    |
+428 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:443:30
+    |
+443 |   ...   task::spawn_blocking(move || {
+    |  _______--------------------_^
+    | |       |
+    | |       required by a bound introduced by this call
+444 | | ...       self.conn.execute(
+445 | | ...           "INSERT INTO birthdays (user_id, username, day, month, year) VALUES (?, ?, ?, ?, ?)
+446 | | ...            ON CONFLICT(user_id) DO UPDATE SET username = EXCLUDED.username, day = EXCLUDED.day, month = EXCLUDED.month, year ...
+447 | | ...           params![user_id, username, day, month, year],
+448 | | ...       ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+449 | | ...   })
+    | |_______^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:443:30
+    |
+443 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:443:30
+    |
+443 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+444 | |             self.conn.execute(
+445 | |                 "INSERT INTO birthdays (user_id, username, day, month, year) VALUES (?, ?, ?, ?, ?)
+446 | |                  ON CONFLICT(user_id) DO UPDATE SET username = EXCLUDED.username, day = EXCLUDED.day, month = EXCLUDED.month, yea...
+447 | |                 params![user_id, username, day, month, year],
+448 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+449 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:443:30
+    |
+443 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:469:41
+    |
+469 |                         created_at: row.get(6)?,
+    |                                         ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:470:41
+    |
+470 |                         updated_at: row.get(7)?,
+    |                                         ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:488:30
+    |
+488 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+489 | |             self.conn.execute(
+490 | |                 "DELETE FROM birthdays WHERE user_id = ?",
+491 | |                 params![user_id],
+492 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+493 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:488:30
+    |
+488 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:488:30
+    |
+488 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+489 | |             self.conn.execute(
+490 | |                 "DELETE FROM birthdays WHERE user_id = ?",
+491 | |                 params![user_id],
+492 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+493 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:488:30
+    |
+488 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:512:37
+    |
+512 |                     created_at: row.get(6)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: the trait bound `DateTime<Utc>: FromSql` is not satisfied
+   --> src\sqlite.rs:513:37
+    |
+513 |                     updated_at: row.get(7)?,
+    |                                     ^^^ the trait `FromSql` is not implemented for `DateTime<Utc>`
+    |
+    = help: the following other types implement trait `FromSql`:
+              Arc<str>
+              Box<str>
+              NonZero<i16>
+              NonZero<i32>
+              NonZero<i64>
+              NonZero<i8>
+              NonZero<isize>
+              NonZero<u16>
+            and 23 others
+note: required by a bound in `rusqlite::Row::<'stmt>::get`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'stmt>::get`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:530:30
+    |
+530 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+531 | |             self.conn.execute(
+532 | |                 "UPDATE birthdays SET last_pinged_year = ? WHERE user_id = ?",
+533 | |                 params![year, user_id],
+534 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+535 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:530:30
+    |
+530 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:530:30
+    |
+530 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+531 | |             self.conn.execute(
+532 | |                 "UPDATE birthdays SET last_pinged_year = ? WHERE user_id = ?",
+533 | |                 params![year, user_id],
+534 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+535 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:530:30
+    |
+530 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:544:30
+    |
+544 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+545 | |             self.conn.execute(
+546 | |                 "INSERT INTO birthday_channels (guild_id, channel_id) VALUES (?, ?)
+547 | |                  ON CONFLICT(guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id, updated_at = CURRENT_TIMESTAMP",
+548 | |                 params![guild_id, channel_id],
+549 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+550 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:544:30
+    |
+544 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:544:30
+    |
+544 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+545 | |             self.conn.execute(
+546 | |                 "INSERT INTO birthday_channels (guild_id, channel_id) VALUES (?, ?)
+547 | |                  ON CONFLICT(guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id, updated_at = CURRENT_TIMESTAMP",
+548 | |                 params![guild_id, channel_id],
+549 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+550 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:544:30
+    |
+544 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:558:30
+    |
+558 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+559 | |             let row = self.conn.query_row(
+560 | |                 "SELECT channel_id FROM birthday_channels WHERE guild_id = ?",
+561 | |                 params![guild_id],
+...   |
+570 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:558:30
+    |
+558 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:558:30
+    |
+558 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+559 | |             let row = self.conn.query_row(
+560 | |                 "SELECT channel_id FROM birthday_channels WHERE guild_id = ?",
+561 | |                 params![guild_id],
+...   |
+570 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:558:30
+    |
+558 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:578:30
+    |
+578 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+579 | |             self.conn.execute(
+580 | |                 "DELETE FROM birthday_channels WHERE guild_id = ?",
+581 | |                 params![guild_id],
+582 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+583 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:578:30
+    |
+578 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:578:30
+    |
+578 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+579 | |             self.conn.execute(
+580 | |                 "DELETE FROM birthday_channels WHERE guild_id = ?",
+581 | |                 params![guild_id],
+582 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+583 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:578:30
+    |
+578 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:593:30
+    |
+593 |   ...   task::spawn_blocking(move || {
+    |  _______--------------------_^
+    | |       |
+    | |       required by a bound introduced by this call
+594 | | ...       self.conn.execute(
+595 | | ...           "INSERT INTO server_settings (guild_id, setting_name, setting_value) VALUES (?, ?, ?)
+596 | | ...            ON CONFLICT(guild_id, setting_name) DO UPDATE SET setting_value = EXCLUDED.setting_value, updated_at = CURRENT_TIM...
+597 | | ...           params![guild_id, setting_name, setting_value],
+598 | | ...       ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+599 | | ...   })
+    | |_______^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:593:30
+    |
+593 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:593:30
+    |
+593 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+594 | |             self.conn.execute(
+595 | |                 "INSERT INTO server_settings (guild_id, setting_name, setting_value) VALUES (?, ?, ?)
+596 | |                  ON CONFLICT(guild_id, setting_name) DO UPDATE SET setting_value = EXCLUDED.setting_value, updated_at = CURRENT_T...
+597 | |                 params![guild_id, setting_name, setting_value],
+598 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+599 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:593:30
+    |
+593 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:608:30
+    |
+608 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+609 | |             let row = self.conn.query_row(
+610 | |                 "SELECT setting_value FROM server_settings WHERE guild_id = ? AND setting_name = ?",
+611 | |                 params![guild_id, setting_name],
+...   |
+620 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:608:30
+    |
+608 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:608:30
+    |
+608 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+609 | |             let row = self.conn.query_row(
+610 | |                 "SELECT setting_value FROM server_settings WHERE guild_id = ? AND setting_name = ?",
+611 | |                 params![guild_id, setting_name],
+...   |
+620 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:608:30
+    |
+608 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:628:30
+    |
+628 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+629 | |             let mut stmt = self.conn.prepare(
+630 | |                 "SELECT guild_id, setting_name, setting_value FROM server_settings WHERE guild_id = ?"
+631 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))?;
+...   |
+645 | |             Ok(settings)
+646 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:628:30
+    |
+628 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:628:30
+    |
+628 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+629 | |             let mut stmt = self.conn.prepare(
+630 | |                 "SELECT guild_id, setting_name, setting_value FROM server_settings WHERE guild_id = ?"
+631 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))?;
+...   |
+645 | |             Ok(settings)
+646 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:628:30
+    |
+628 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:655:30
+    |
+655 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+656 | |             self.conn.execute(
+657 | |                 "DELETE FROM server_settings WHERE guild_id = ? AND setting_name = ?",
+658 | |                 params![guild_id, setting_name],
+659 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+660 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:655:30
+    |
+655 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:655:30
+    |
+655 |           task::spawn_blocking(move || {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+656 | |             self.conn.execute(
+657 | |                 "DELETE FROM server_settings WHERE guild_id = ? AND setting_name = ?",
+658 | |                 params![guild_id, setting_name],
+659 | |             ).map(|c| c > 0).map_err(|e| DatabaseError::Query(e.to_string()))
+660 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:655:30
+    |
+655 |         task::spawn_blocking(move || {
+    |                              ^^^^^^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:666:30
+    |
+666 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+667 | |             self.conn.query_row(
+668 | |                 "SELECT COUNT(*) FROM messages",
+669 | |                 [],
+670 | |                 |row| row.get(0),
+671 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))
+672 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:666:30
+    |
+666 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:666:30
+    |
+666 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+667 | |             self.conn.query_row(
+668 | |                 "SELECT COUNT(*) FROM messages",
+669 | |                 [],
+670 | |                 |row| row.get(0),
+671 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))
+672 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:666:30
+    |
+666 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+   --> src\sqlite.rs:678:30
+    |
+678 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+679 | |             self.conn.query_row(
+680 | |                 "SELECT COUNT(DISTINCT channel_id) FROM messages",
+681 | |                 [],
+682 | |                 |row| row.get(0),
+683 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))
+684 | |         })
+    | |_________^ `RefCell<rusqlite::inner_connection::InnerConnection>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:678:30
+    |
+678 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error[E0277]: `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+   --> src\sqlite.rs:678:30
+    |
+678 |           task::spawn_blocking(|| {
+    |  _________--------------------_^
+    | |         |
+    | |         required by a bound introduced by this call
+679 | |             self.conn.query_row(
+680 | |                 "SELECT COUNT(DISTINCT channel_id) FROM messages",
+681 | |                 [],
+682 | |                 |row| row.get(0),
+683 | |             ).map_err(|e| DatabaseError::Query(e.to_string()))
+684 | |         })
+    | |_________^ `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>` cannot be shared between threads safely
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: required because it appears within the type `rusqlite::cache::StatementCache`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\cache.rs:61:12
+    |
+ 61 | pub struct StatementCache(RefCell<LruCache<Arc<str>, RawStatement>>);
+    |            ^^^^^^^^^^^^^^
+note: required because it appears within the type `rusqlite::Connection`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rusqlite-0.32.1\src\lib.rs:377:12
+    |
+377 | pub struct Connection {
+    |            ^^^^^^^^^^
+note: required because it appears within the type `SqliteDatabase`
+   --> src\sqlite.rs:11:12
+    |
+ 11 | pub struct SqliteDatabase {
+    |            ^^^^^^^^^^^^^^
+    = note: required for `&SqliteDatabase` to implement `std::marker::Send`
+note: required because it's used within this closure
+   --> src\sqlite.rs:678:30
+    |
+678 |         task::spawn_blocking(|| {
+    |                              ^^
+note: required by a bound in `tokio::task::spawn_blocking`
+   --> C:\Users\mikek\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.50.0\src\task\blocking.rs:222:28
+    |
+220 |     pub fn spawn_blocking<F, R>(f: F) -> JoinHandle<R>
+    |            -------------- required by a bound in this function
+221 |     where
+222 |         F: FnOnce() -> R + Send + 'static,
+    |                            ^^^^ required by this bound in `spawn_blocking`
+
+error: future cannot be sent between threads safely
+  --> src\sqlite.rs:51:5
+   |
+51 |     async fn test_connection(&self) -> DbResult<bool> {
+   |     ^^^^^ future created by async block is not `Send`
+   |
+   = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+   = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> src\sqlite.rs:51:31
+   |
+51 |     async fn test_connection(&self) -> DbResult<bool> {
+   |                               ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+   = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:51:5: 51:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+   = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+  --> src\sqlite.rs:51:5
+   |
+51 |     async fn test_connection(&self) -> DbResult<bool> {
+   |     ^^^^^ future created by async block is not `Send`
+   |
+   = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+   = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> src\sqlite.rs:51:31
+   |
+51 |     async fn test_connection(&self) -> DbResult<bool> {
+   |                               ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+   = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:51:5: 51:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+   = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+  --> src\sqlite.rs:64:5
+   |
+64 |     async fn initialize(&self) -> DbResult<()> {
+   |     ^^^^^ future created by async block is not `Send`
+   |
+   = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+   = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> src\sqlite.rs:64:26
+   |
+64 |     async fn initialize(&self) -> DbResult<()> {
+   |                          ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+   = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:64:5: 64:10}>>` to `Pin<Box<dyn Future<Output = Result<(), DatabaseError>> + Send>>`
+   = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-239704727298642948.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+  --> src\sqlite.rs:64:5
+   |
+64 |     async fn initialize(&self) -> DbResult<()> {
+   |     ^^^^^ future created by async block is not `Send`
+   |
+   = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+   = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+  --> src\sqlite.rs:64:26
+   |
+64 |     async fn initialize(&self) -> DbResult<()> {
+   |                          ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+   = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:64:5: 64:10}>>` to `Pin<Box<dyn Future<Output = Result<(), DatabaseError>> + Send>>`
+   = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-239704727298642948.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:279:5
+    |
+279 |     async fn cleanup_old_messages(&self, days_old: i32) -> DbResult<u64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:279:36
+    |
+279 |     async fn cleanup_old_messages(&self, days_old: i32) -> DbResult<u64> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:279:5: 279:10}>>` to `Pin<Box<dyn Future<Output = Result<u64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-7324441348615399127.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:279:5
+    |
+279 |     async fn cleanup_old_messages(&self, days_old: i32) -> DbResult<u64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:279:36
+    |
+279 |     async fn cleanup_old_messages(&self, days_old: i32) -> DbResult<u64> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:279:5: 279:10}>>` to `Pin<Box<dyn Future<Output = Result<u64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-7324441348615399127.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:425:5
+    |
+425 |     async fn remove_memory(&self, memory_id: i64, user_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:425:29
+    |
+425 |     async fn remove_memory(&self, memory_id: i64, user_id: &str) -> DbResult<bool> {
+    |                             ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:425:5: 425:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:425:5
+    |
+425 |     async fn remove_memory(&self, memory_id: i64, user_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:425:29
+    |
+425 |     async fn remove_memory(&self, memory_id: i64, user_id: &str) -> DbResult<bool> {
+    |                             ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:425:5: 425:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:439:5
+    |
+439 |     async fn set_birthday(&self, user_id: &str, username: &str, day: i32, month: i32, year: Option<i32>) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:439:28
+    |
+439 |     async fn set_birthday(&self, user_id: &str, username: &str, day: i32, month: i32, year: Option<i32>) -> DbResult<bool> {
+    |                            ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:439:5: 439:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:439:5
+    |
+439 |     async fn set_birthday(&self, user_id: &str, username: &str, day: i32, month: i32, year: Option<i32>) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:439:28
+    |
+439 |     async fn set_birthday(&self, user_id: &str, username: &str, day: i32, month: i32, year: Option<i32>) -> DbResult<bool> {
+    |                            ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:439:5: 439:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:485:5
+    |
+485 |     async fn remove_birthday(&self, user_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:485:31
+    |
+485 |     async fn remove_birthday(&self, user_id: &str) -> DbResult<bool> {
+    |                               ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:485:5: 485:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:485:5
+    |
+485 |     async fn remove_birthday(&self, user_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:485:31
+    |
+485 |     async fn remove_birthday(&self, user_id: &str) -> DbResult<bool> {
+    |                               ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:485:5: 485:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:527:5
+    |
+527 |     async fn mark_birthday_as_pinged(&self, user_id: &str, year: i32) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:527:39
+    |
+527 |     async fn mark_birthday_as_pinged(&self, user_id: &str, year: i32) -> DbResult<bool> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:527:5: 527:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:527:5
+    |
+527 |     async fn mark_birthday_as_pinged(&self, user_id: &str, year: i32) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:527:39
+    |
+527 |     async fn mark_birthday_as_pinged(&self, user_id: &str, year: i32) -> DbResult<bool> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:527:5: 527:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:540:5
+    |
+540 |     async fn set_birthday_channel(&self, guild_id: &str, channel_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:540:36
+    |
+540 |     async fn set_birthday_channel(&self, guild_id: &str, channel_id: &str) -> DbResult<bool> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:540:5: 540:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:540:5
+    |
+540 |     async fn set_birthday_channel(&self, guild_id: &str, channel_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:540:36
+    |
+540 |     async fn set_birthday_channel(&self, guild_id: &str, channel_id: &str) -> DbResult<bool> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:540:5: 540:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:555:5
+    |
+555 |     async fn get_birthday_channel(&self, guild_id: &str) -> DbResult<Option<String>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:555:36
+    |
+555 |     async fn get_birthday_channel(&self, guild_id: &str) -> DbResult<Option<String>> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:555:5: 555:10}>>` to `Pin<Box<dyn Future<Output = Result<Option<String>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-351165669093264717.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:555:5
+    |
+555 |     async fn get_birthday_channel(&self, guild_id: &str) -> DbResult<Option<String>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:555:36
+    |
+555 |     async fn get_birthday_channel(&self, guild_id: &str) -> DbResult<Option<String>> {
+    |                                    ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:555:5: 555:10}>>` to `Pin<Box<dyn Future<Output = Result<Option<String>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-351165669093264717.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:575:5
+    |
+575 |     async fn remove_birthday_channel(&self, guild_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:575:39
+    |
+575 |     async fn remove_birthday_channel(&self, guild_id: &str) -> DbResult<bool> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:575:5: 575:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:575:5
+    |
+575 |     async fn remove_birthday_channel(&self, guild_id: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:575:39
+    |
+575 |     async fn remove_birthday_channel(&self, guild_id: &str) -> DbResult<bool> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:575:5: 575:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:588:5
+    |
+588 |     async fn set_server_setting(&self, guild_id: &str, setting_name: &str, setting_value: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:588:34
+    |
+588 |     async fn set_server_setting(&self, guild_id: &str, setting_name: &str, setting_value: &str) -> DbResult<bool> {
+    |                                  ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:588:5: 588:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:588:5
+    |
+588 |     async fn set_server_setting(&self, guild_id: &str, setting_name: &str, setting_value: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:588:34
+    |
+588 |     async fn set_server_setting(&self, guild_id: &str, setting_name: &str, setting_value: &str) -> DbResult<bool> {
+    |                                  ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:588:5: 588:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:604:5
+    |
+604 |     async fn get_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<Option<String>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:604:34
+    |
+604 |     async fn get_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<Option<String>> {
+    |                                  ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:604:5: 604:10}>>` to `Pin<Box<dyn Future<Output = Result<Option<String>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-351165669093264717.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:604:5
+    |
+604 |     async fn get_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<Option<String>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:604:34
+    |
+604 |     async fn get_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<Option<String>> {
+    |                                  ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:604:5: 604:10}>>` to `Pin<Box<dyn Future<Output = Result<Option<String>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-351165669093264717.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:625:5
+    |
+625 |     async fn get_all_server_settings(&self, guild_id: &str) -> DbResult<Vec<ServerSetting>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:625:39
+    |
+625 |     async fn get_all_server_settings(&self, guild_id: &str) -> DbResult<Vec<ServerSetting>> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:625:5: 625:10}>>` to `Pin<Box<dyn Future<Output = Result<Vec<ServerSetting>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-15720943155095378917.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:625:5
+    |
+625 |     async fn get_all_server_settings(&self, guild_id: &str) -> DbResult<Vec<ServerSetting>> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:625:39
+    |
+625 |     async fn get_all_server_settings(&self, guild_id: &str) -> DbResult<Vec<ServerSetting>> {
+    |                                       ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:625:5: 625:10}>>` to `Pin<Box<dyn Future<Output = Result<Vec<ServerSetting>, ...>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-15720943155095378917.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:651:5
+    |
+651 |     async fn remove_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:651:37
+    |
+651 |     async fn remove_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<bool> {
+    |                                     ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:651:5: 651:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:651:5
+    |
+651 |     async fn remove_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<bool> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:651:37
+    |
+651 |     async fn remove_server_setting(&self, guild_id: &str, setting_name: &str) -> DbResult<bool> {
+    |                                     ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:651:5: 651:10}>>` to `Pin<Box<dyn Future<Output = Result<bool, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-5741630838859500463.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:665:5
+    |
+665 |     async fn get_message_count(&self) -> DbResult<i64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:665:33
+    |
+665 |     async fn get_message_count(&self) -> DbResult<i64> {
+    |                                 ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:665:5: 665:10}>>` to `Pin<Box<dyn Future<Output = Result<i64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-104501998317400060.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:665:5
+    |
+665 |     async fn get_message_count(&self) -> DbResult<i64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:665:33
+    |
+665 |     async fn get_message_count(&self) -> DbResult<i64> {
+    |                                 ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:665:5: 665:10}>>` to `Pin<Box<dyn Future<Output = Result<i64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-104501998317400060.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:677:5
+    |
+677 |     async fn get_unique_channel_count(&self) -> DbResult<i64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<rusqlite::inner_connection::InnerConnection>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:677:40
+    |
+677 |     async fn get_unique_channel_count(&self) -> DbResult<i64> {
+    |                                        ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:677:5: 677:10}>>` to `Pin<Box<dyn Future<Output = Result<i64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-104501998317400060.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error: future cannot be sent between threads safely
+   --> src\sqlite.rs:677:5
+    |
+677 |     async fn get_unique_channel_count(&self) -> DbResult<i64> {
+    |     ^^^^^ future created by async block is not `Send`
+    |
+    = help: within `SqliteDatabase`, the trait `Sync` is not implemented for `RefCell<hashlink::lru_cache::LruCache<Arc<str>, rusqlite::raw_statement::RawStatement>>`
+    = note: if you want to do aliasing and mutation between multiple threads, use `std::sync::RwLock` instead
+note: captured value is not `Send` because `&` references cannot be sent unless their referent is `Sync`
+   --> src\sqlite.rs:677:40
+    |
+677 |     async fn get_unique_channel_count(&self) -> DbResult<i64> {
+    |                                        ^^^^ has type `&SqliteDatabase` which is not `Send`, because `SqliteDatabase` is not `Sync`
+    = note: required for the cast from `std::pin::Pin<Box<{async block@src\sqlite.rs:677:5: 677:10}>>` to `Pin<Box<dyn Future<Output = Result<i64, DatabaseError>> + Send>>`
+    = note: the full name for the type has been written to 'C:\Users\mikek\veebot-rust\target\debug\deps\veebot-cded73c2b90469cf.long-type-104501998317400060.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+Some errors have detailed explanations: E0063, E0277, E0282, E0433, E0599.
+For more information about an error, try `rustc --explain E0063`.
+warning: `veebot` (lib) generated 1 warning
+error: could not compile `veebot` (lib) due to 112 previous errors; 1 warning emitted

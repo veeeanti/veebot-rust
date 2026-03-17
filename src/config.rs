@@ -67,6 +67,15 @@ impl std::str::FromStr for DatabaseType {
     }
 }
 
+impl std::fmt::Display for DatabaseType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DatabaseType::Sqlite => f.write_str("sqlite"),
+            DatabaseType::Postgres => f.write_str("postgres"),
+        }
+    }
+}
+
 impl Config {
     pub fn from_env() -> Result<Self, config::ConfigError> {
         dotenv::dotenv().ok();

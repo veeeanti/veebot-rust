@@ -1,9 +1,10 @@
 //! PostgreSQL database implementation
 
-use super::{Database, DatabaseError, DbResult, Message, MessageType, Memory, Birthday, ServerSetting, StoreMessageData};
+use crate::database::{Database, DatabaseError, DbResult, Message, MessageType, Memory, Birthday, ServerSetting, StoreMessageData};
 use async_trait::async_trait;
-use std::sync::Arc;
-use tokio::sync::RwLock;
+use sqlx::postgres::PgPoolOptions;
+use sqlx::Row;
+use std::str::FromStr;
 
 const SCHEMA: &str = include_str!("../schema.sql");
 
@@ -16,7 +17,7 @@ impl PostgresDatabase {
         let options = sqlx::postgres::PgConnectOptions::from_str(url)
             .map_err(|e| DatabaseError::Connection(e.to_string()))?;
         
-        let pool = sqlx::PgPoolOptions::new()
+        let pool = PgPoolOptions::new()
             .max_connections(20)
             .idle_timeout(std::time::Duration::from_secs(30))
             .connect_timeout(std::time::Duration::from_secs(10))
@@ -98,38 +99,55 @@ impl Database for PostgresDatabase {
     }
     
     async fn find_similar_messages(&self, query: &str, guild_id: Option<&str>, author_id: Option<&str>, limit: usize) -> DbResult<Vec<Message>> {
-        let mut sql = String::from(
+        let base =
             "SELECT id, discord_message_id, content, author_id, author_name, message_type, guild_id, channel_id, created_at, updated_at,
              ts_rank(to_tsvector('english', content), plainto_tsquery('english', $1)) as similarity_score
              FROM messages
-             WHERE to_tsvector('english', content) @@ plainto_tsquery('english', $1)"
-        );
-        
-        let mut params: Vec<Box<dyn sqlx::Encode<'_, sqlx::Postgres>>> = vec![Box::new(query.to_string())];
-        let mut param_index = 2;
-        
-        if guild_id.is_some() {
-            sql.push_str(&format!(" AND guild_id = ${}", param_index));
-            params.push(Box::new(guild_id.unwrap().to_string()));
-            param_index += 1;
+             WHERE to_tsvector('english', content) @@ plainto_tsquery('english', $1)";
+
+        let rows = match (guild_id, author_id) {
+            (Some(guild_id), Some(author_id)) => {
+                sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!("{base} AND guild_id = $2 AND author_id = $3 ORDER BY similarity_score DESC, created_at DESC LIMIT $4"),
+                )
+                .bind(query)
+                .bind(guild_id)
+                .bind(author_id)
+                .bind(limit as i64)
+                .fetch_all(&self.pool)
+                .await
+            }
+            (Some(guild_id), None) => {
+                sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!("{base} AND guild_id = $2 ORDER BY similarity_score DESC, created_at DESC LIMIT $3"),
+                )
+                .bind(query)
+                .bind(guild_id)
+                .bind(limit as i64)
+                .fetch_all(&self.pool)
+                .await
+            }
+            (None, Some(author_id)) => {
+                sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!("{base} AND author_id = $2 ORDER BY similarity_score DESC, created_at DESC LIMIT $3"),
+                )
+                .bind(query)
+                .bind(author_id)
+                .bind(limit as i64)
+                .fetch_all(&self.pool)
+                .await
+            }
+            (None, None) => {
+                sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!("{base} ORDER BY similarity_score DESC, created_at DESC LIMIT $2"),
+                )
+                .bind(query)
+                .bind(limit as i64)
+                .fetch_all(&self.pool)
+                .await
+            }
         }
-        if author_id.is_some() {
-            sql.push_str(&format!(" AND author_id = ${}", param_index));
-            params.push(Box::new(author_id.unwrap().to_string()));
-            param_index += 1;
-        }
-        
-        sql.push_str(&format!(" ORDER BY similarity_score DESC, created_at DESC LIMIT ${}", param_index));
-        params.push(Box::new(limit as i64));
-        
-        // Build the query dynamically
-        let mut builder = sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(&sql);
-        
-        for param in params.iter() {
-            builder = builder.bind(param.as_ref().as_ref());
-        }
-        
-        let rows = builder.fetch_all(&self.pool).await.map_err(|e| DatabaseError::Query(e.to_string()))?;
+        .map_err(|e| DatabaseError::Query(e.to_string()))?;
         
         Ok(rows.into_iter().map(|row| Message {
             id: row.0,
@@ -259,26 +277,32 @@ impl Database for PostgresDatabase {
     }
     
     async fn get_memories(&self, user_id: &str, guild_id: Option<&str>, limit: usize) -> DbResult<Vec<Memory>> {
-        let sql = if guild_id.is_some() {
-            format!(
-                "SELECT id, user_id, username, memory, guild_id, channel_id, created_at, updated_at FROM memories WHERE user_id = $1 AND guild_id = $2 ORDER BY created_at DESC LIMIT {}",
-                limit
-            )
-        } else {
-            format!(
-                "SELECT id, user_id, username, memory, guild_id, channel_id, created_at, updated_at FROM memories WHERE user_id = $1 ORDER BY created_at DESC LIMIT {}",
-                limit
-            )
-        };
-        
-        let mut builder = sqlx::query_as::<_, (i64, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(&sql)
-            .bind(user_id);
-        
-        if guild_id.is_some() {
-            builder = builder.bind(guild_id.unwrap());
+        let rows = match guild_id {
+            Some(guild_id) => {
+                sqlx::query_as::<_, (i64, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!(
+                        "SELECT id, user_id, username, memory, guild_id, channel_id, created_at, updated_at FROM memories WHERE user_id = $1 AND guild_id = $2 ORDER BY created_at DESC LIMIT {}",
+                        limit
+                    ),
+                )
+                .bind(user_id)
+                .bind(guild_id)
+                .fetch_all(&self.pool)
+                .await
+            }
+            None => {
+                sqlx::query_as::<_, (i64, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
+                    &format!(
+                        "SELECT id, user_id, username, memory, guild_id, channel_id, created_at, updated_at FROM memories WHERE user_id = $1 ORDER BY created_at DESC LIMIT {}",
+                        limit
+                    ),
+                )
+                .bind(user_id)
+                .fetch_all(&self.pool)
+                .await
+            }
         }
-        
-        let rows = builder.fetch_all(&self.pool).await.map_err(|e| DatabaseError::Query(e.to_string()))?;
+        .map_err(|e| DatabaseError::Query(e.to_string()))?;
         
         Ok(rows.into_iter().map(|row| Memory {
             id: row.0,

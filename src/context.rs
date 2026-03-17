@@ -268,6 +268,7 @@ impl ContextManager {
                             MessageType::Assistant => "assistant".to_string(),
                             _ => "user".to_string(),
                         },
+                        similarity: None,
                         timestamp: Some(msg.created_at),
                         is_recent: true,
                     });
@@ -312,6 +313,7 @@ impl ContextManager {
                     MessageType::Assistant => "assistant".to_string(),
                     _ => "user".to_string(),
                 },
+                similarity: None,
                 timestamp: Some(msg.created_at),
                 is_recent: false,
             })
