@@ -77,26 +77,58 @@ impl std::fmt::Display for DatabaseType {
 }
 
 impl Config {
-    pub fn from_env() -> Result<Self, config::ConfigError> {
-        // Try to find .env file in current directory
-        let env_loaded = dotenv::dotenv().is_ok();
-        tracing::info!("dotenv loaded: {}", env_loaded);
+    /// Find the project root by looking for Cargo.toml
+    fn find_project_root() -> Option<std::path::PathBuf> {
+        let mut path = std::env::current_dir().ok()?;
         
-        // Debug: print current working directory and check if .env was loaded
-        tracing::info!("Current dir: {:?}", std::env::current_dir());
-        
-        // Try to read .env directly to verify it's accessible
-        if let Ok(contents) = std::fs::read_to_string(".env") {
-            let has_openrouter = contents.contains("OPENROUTER_API_KEY");
-            let has_ai_model = contents.contains("AI_MODEL");
-            tracing::info!(".env file has OPENROUTER_API_KEY: {}, AI_MODEL: {}", has_openrouter, has_ai_model);
+        // Look upwards for Cargo.toml
+        loop {
+            if path.join("Cargo.toml").exists() {
+                return Some(path);
+            }
+            if !path.pop() {
+                break;
+            }
         }
+        None
+    }
+
+    /// Load .env file manually from the given path
+    fn load_env_file(path: &std::path::Path) -> Result<(), std::io::Error> {
+        let contents = std::fs::read_to_string(path)?;
+        for line in contents.lines() {
+            let line = line.trim();
+            // Skip empty lines and comments
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            // Parse KEY=VALUE format
+            if let Some((key, value)) = line.split_once('=') {
+                let key = key.trim();
+                let value = value.trim();
+                // Remove surrounding quotes if present
+                let value = value.trim_matches('"').trim_matches('\'');
+                std::env::set_var(key, value);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn from_env() -> Result<Self, config::ConfigError> {
+        // Try to find project root and load .env from there
+        let project_root = Self::find_project_root();
+        let env_path = project_root.as_ref().map(|p| p.join(".env"));
         
-        // Now read the env vars - this is the real test
-        let openrouter_check = env::var("OPENROUTER_API_KEY");
-        let ai_model_check = env::var("AI_MODEL");
-        tracing::info!("OPENROUTER_API_KEY env::var result: {:?}", openrouter_check.is_ok());
-        tracing::info!("AI_MODEL env::var result: {:?}", ai_model_check.is_ok());
+        let env_loaded = if let Some(ref path) = env_path {
+            Self::load_env_file(path).is_ok()
+        } else {
+            dotenv::dotenv().is_ok()
+        };
+        
+        if let Some(ref path) = env_path {
+            tracing::info!("Loading .env from: {:?}", path);
+        }
+        tracing::info!("dotenv loaded: {}", env_loaded);
         
         let database_type_str = env::var("DATABASE_TYPE").unwrap_or_else(|_| "sqlite".to_string());
         let database_type: DatabaseType = database_type_str.parse().unwrap_or_default();
