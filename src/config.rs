@@ -78,18 +78,51 @@ impl std::fmt::Display for DatabaseType {
 
 impl Config {
     pub fn from_env() -> Result<Self, config::ConfigError> {
-        dotenv::dotenv().ok();
+        // Try to find .env file in current directory
+        let env_loaded = dotenv::dotenv().is_ok();
+        tracing::info!("dotenv loaded: {}", env_loaded);
+        
+        // Debug: print current working directory and check if .env was loaded
+        tracing::info!("Current dir: {:?}", std::env::current_dir());
+        
+        // Try to read .env directly to verify it's accessible
+        if let Ok(contents) = std::fs::read_to_string(".env") {
+            let has_openrouter = contents.contains("OPENROUTER_API_KEY");
+            let has_ai_model = contents.contains("AI_MODEL");
+            tracing::info!(".env file has OPENROUTER_API_KEY: {}, AI_MODEL: {}", has_openrouter, has_ai_model);
+        }
+        
+        // Now read the env vars - this is the real test
+        let openrouter_check = env::var("OPENROUTER_API_KEY");
+        let ai_model_check = env::var("AI_MODEL");
+        tracing::info!("OPENROUTER_API_KEY env::var result: {:?}", openrouter_check.is_ok());
+        tracing::info!("AI_MODEL env::var result: {:?}", ai_model_check.is_ok());
         
         let database_type_str = env::var("DATABASE_TYPE").unwrap_or_else(|_| "sqlite".to_string());
         let database_type: DatabaseType = database_type_str.parse().unwrap_or_default();
+        
+        let openrouter_api_key = env::var("OPENROUTER_API_KEY").ok();
+        let ai_model = env::var("AI_MODEL").ok();
+        
+        // Debug logging for AI config
+        if openrouter_api_key.is_some() {
+            tracing::info!("OPENROUTER_API_KEY loaded: present");
+        } else {
+            tracing::warn!("OPENROUTER_API_KEY is missing or empty!");
+        }
+        if ai_model.is_some() {
+            tracing::info!("AI_MODEL loaded: {}", ai_model.as_ref().unwrap());
+        } else {
+            tracing::warn!("AI_MODEL is missing or empty!");
+        }
         
         Ok(Config {
             discord_token: env::var("DISCORD_TOKEN").unwrap_or_default(),
             guild_id: env::var("GUILD_ID").ok(),
             channel_id: env::var("CHANNEL_ID").ok(),
             local: env::var("LOCAL").map(|v| v == "true").unwrap_or(false),
-            ai_model: env::var("AI_MODEL").ok(),
-            openrouter_api_key: env::var("OPENROUTER_API_KEY").ok(),
+            ai_model,
+            openrouter_api_key,
             random_response_chance: env::var("RANDOM_RESPONSE_CHANCE")
                 .ok()
                 .and_then(|v| v.parse().ok())

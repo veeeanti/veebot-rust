@@ -35,6 +35,7 @@ pub struct ContextManager {
     is_initialized: Arc<TokioRwLock<bool>>,
     message_cache: Arc<RwLock<HashMap<String, Vec<ContextMessage>>>>,
     max_context_messages: usize,
+    #[allow(dead_code)]
     similarity_threshold: f64,
     enable_semantic_search: bool,
 }

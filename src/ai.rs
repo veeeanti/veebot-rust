@@ -104,6 +104,7 @@ pub struct AiService {
     context_manager: Arc<ContextManager>,
     prompt: String,
     debug: bool,
+    #[allow(dead_code)]
     enable_mentions: bool,
 }
 
