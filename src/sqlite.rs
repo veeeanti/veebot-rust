@@ -95,11 +95,11 @@ impl Database for SqliteDatabase {
             (Some(guild_id), Some(author_id)) => {
                 sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
                     "SELECT m.id, m.discord_message_id, m.content, m.author_id, m.author_name, m.message_type, m.guild_id, m.channel_id, m.created_at, m.updated_at
-                     FROM messages m
-                     JOIN messages_fts ON messages_fts.rowid = m.id
-                     WHERE messages_fts MATCH ? AND m.guild_id = ? AND m.author_id = ?
-                     ORDER BY m.created_at DESC
-                     LIMIT ?"
+                    FROM messages m
+                    JOIN messages_fts ON messages_fts.rowid = m.id
+                    WHERE messages_fts MATCH ? AND m.guild_id = ? AND m.author_id = ?
+                    ORDER BY m.created_at DESC
+                    LIMIT ?"
                 )
                 .bind(query)
                 .bind(guild_id)
@@ -111,11 +111,11 @@ impl Database for SqliteDatabase {
             (Some(guild_id), None) => {
                 sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
                     "SELECT m.id, m.discord_message_id, m.content, m.author_id, m.author_name, m.message_type, m.guild_id, m.channel_id, m.created_at, m.updated_at
-                     FROM messages m
-                     JOIN messages_fts ON messages_fts.rowid = m.id
-                     WHERE messages_fts MATCH ? AND m.guild_id = ?
-                     ORDER BY m.created_at DESC
-                     LIMIT ?"
+                    FROM messages m
+                    JOIN messages_fts ON messages_fts.rowid = m.id
+                    WHERE messages_fts MATCH ? AND m.guild_id = ?
+                    ORDER BY m.created_at DESC
+                    LIMIT ?"
                 )
                 .bind(query)
                 .bind(guild_id)

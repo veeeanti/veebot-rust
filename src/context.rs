@@ -302,7 +302,7 @@ impl ContextManager {
     pub async fn get_channel_context(&self, channel_id: &str, limit: usize) -> DbResult<Vec<ContextMessage>> {
         let messages = self.database.get_channel_messages(channel_id, limit).await?;
         
-        let mut result: Vec<ContextMessage> = messages
+        let result: Vec<ContextMessage> = messages
             .into_iter()
             .rev()
             .map(|msg| ContextMessage {

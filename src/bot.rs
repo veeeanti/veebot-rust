@@ -229,29 +229,33 @@ async fn handle_ask(ctx: &Context, cmd: &CommandInteraction, state: &BotState) -
 }
 
 async fn handle_stats(ctx: &Context, cmd: &CommandInteraction) -> Result<(), serenity::Error> {
-    let guild = match cmd.guild_id {
-        Some(id) => ctx.cache.guild(id),
-        None => {
-            return respond_text(ctx, cmd, "This command can only be used in a server").await;
-        }
+    let Some(guild_id) = cmd.guild_id else {
+        return respond_text(ctx, cmd, "This command can only be used in a server").await;
     };
-    
-    let guild = match guild {
-        Some(g) => g,
-        None => return respond_text(ctx, cmd, "Server data is not in cache yet").await,
+
+    let (guild_name, total_members, bot_count, channel_count, role_count) = {
+        let Some(guild) = ctx.cache.guild(guild_id) else {
+            return respond_text(ctx, cmd, "Server data is not in cache yet").await;
+        };
+
+        (
+            guild.name.clone(),
+            guild.member_count,
+            guild.members.values().filter(|member| member.user.bot).count(),
+            guild.channels.len(),
+            guild.roles.len(),
+        )
     };
-    
-    let total_members = guild.member_count;
-    let bot_count = guild.members.values().filter(|member| member.user.bot).count();
+
     let human_count = total_members.saturating_sub(bot_count as u64);
 
     let embed = CreateEmbed::new()
-        .title(format!("📊 {}", guild.name))
+        .title(format!("📊 {}", guild_name))
         .field("Total Members", total_members.to_string(), true)
         .field("Humans", human_count.to_string(), true)
         .field("Bots", bot_count.to_string(), true)
-        .field("Channels", guild.channels.len().to_string(), true)
-        .field("Roles", guild.roles.len().to_string(), true)
+        .field("Channels", channel_count.to_string(), true)
+        .field("Roles", role_count.to_string(), true)
         .color(0x5865F2);
 
     respond_embed(ctx, cmd, embed).await

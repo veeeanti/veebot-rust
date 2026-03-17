@@ -3,7 +3,6 @@
 use crate::database::{Database, DatabaseError, DbResult, Message, MessageType, Memory, Birthday, ServerSetting, StoreMessageData};
 use async_trait::async_trait;
 use sqlx::postgres::PgPoolOptions;
-use sqlx::Row;
 use std::str::FromStr;
 
 const SCHEMA: &str = include_str!("../schema.sql");
@@ -17,10 +16,10 @@ impl PostgresDatabase {
         let options = sqlx::postgres::PgConnectOptions::from_str(url)
             .map_err(|e| DatabaseError::Connection(e.to_string()))?;
         
-        let pool = PgPoolOptions::new()
+        let pool: sqlx::PgPool = PgPoolOptions::new()
             .max_connections(20)
             .idle_timeout(std::time::Duration::from_secs(30))
-            .connect_timeout(std::time::Duration::from_secs(10))
+            .acquire_timeout(std::time::Duration::from_secs(10))
             .connect_with(options)
             .await
             .map_err(|e| DatabaseError::Connection(e.to_string()))?;
@@ -64,7 +63,7 @@ impl Database for PostgresDatabase {
             MessageType::Assistant => "assistant",
         };
         
-        let result = sqlx::query(
+        let result = sqlx::query_as::<_, (i64, Option<String>, String, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
             "INSERT INTO messages (discord_message_id, content, author_id, author_name, channel_id, guild_id, message_type)
              VALUES ($1, $2, $3, $4, $5, $6, $7)
              ON CONFLICT (discord_message_id) DO NOTHING
@@ -81,21 +80,7 @@ impl Database for PostgresDatabase {
         .await
         .map_err(|e| DatabaseError::Query(e.to_string()))?;
         
-        Ok(result.map(|row| Message {
-            id: row.get(0),
-            discord_message_id: row.get(1),
-            content: row.get(2),
-            author_id: row.get(3),
-            author_name: row.get(4),
-            message_type: match row.get::<_, String>(5).as_str() {
-                "assistant" => MessageType::Assistant,
-                _ => MessageType::User,
-            },
-            guild_id: row.get(6),
-            channel_id: row.get(7),
-            created_at: row.get(8),
-            updated_at: row.get(9),
-        }))
+        Ok(result.map(message_from_row))
     }
     
     async fn find_similar_messages(&self, query: &str, guild_id: Option<&str>, author_id: Option<&str>, limit: usize) -> DbResult<Vec<Message>> {
@@ -250,7 +235,7 @@ impl Database for PostgresDatabase {
     }
     
     async fn store_memory(&self, user_id: &str, username: &str, memory: &str, guild_id: Option<&str>) -> DbResult<Option<Memory>> {
-        let result = sqlx::query(
+        let result = sqlx::query_as::<_, (i64, String, String, String, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>, chrono::DateTime<chrono::Utc>)>(
             "INSERT INTO memories (user_id, username, memory, guild_id)
              VALUES ($1, $2, $3, $4)
              ON CONFLICT DO NOTHING
@@ -264,16 +249,7 @@ impl Database for PostgresDatabase {
         .await
         .map_err(|e| DatabaseError::Query(e.to_string()))?;
         
-        Ok(result.map(|row| Memory {
-            id: row.get(0),
-            user_id: row.get(1),
-            username: row.get(2),
-            memory: row.get(3),
-            guild_id: row.get(4),
-            channel_id: row.get(5),
-            created_at: row.get(6),
-            updated_at: row.get(7),
-        }))
+        Ok(result.map(memory_from_row))
     }
     
     async fn get_memories(&self, user_id: &str, guild_id: Option<&str>, limit: usize) -> DbResult<Vec<Memory>> {
@@ -561,5 +537,60 @@ impl Database for PostgresDatabase {
             .map_err(|e| DatabaseError::Query(e.to_string()))?;
         
         Ok(count)
+    }
+}
+
+fn message_from_row(
+    row: (
+        i64,
+        Option<String>,
+        String,
+        String,
+        String,
+        String,
+        Option<String>,
+        Option<String>,
+        chrono::DateTime<chrono::Utc>,
+        chrono::DateTime<chrono::Utc>,
+    ),
+) -> Message {
+    Message {
+        id: row.0,
+        discord_message_id: row.1,
+        content: row.2,
+        author_id: row.3,
+        author_name: row.4,
+        message_type: match row.5.as_str() {
+            "assistant" => MessageType::Assistant,
+            _ => MessageType::User,
+        },
+        guild_id: row.6,
+        channel_id: row.7,
+        created_at: row.8,
+        updated_at: row.9,
+    }
+}
+
+fn memory_from_row(
+    row: (
+        i64,
+        String,
+        String,
+        String,
+        Option<String>,
+        Option<String>,
+        chrono::DateTime<chrono::Utc>,
+        chrono::DateTime<chrono::Utc>,
+    ),
+) -> Memory {
+    Memory {
+        id: row.0,
+        user_id: row.1,
+        username: row.2,
+        memory: row.3,
+        guild_id: row.4,
+        channel_id: row.5,
+        created_at: row.6,
+        updated_at: row.7,
     }
 }
