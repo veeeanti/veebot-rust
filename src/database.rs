@@ -1,11 +1,8 @@
 //! Database module for veebot
 //! Handles SQLite and PostgreSQL connections and operations
 
-mod sqlite;
-mod postgres;
-
-pub use sqlite::SqliteDatabase;
-pub use postgres::PostgresDatabase;
+pub use crate::sqlite::SqliteDatabase;
+pub use crate::postgres::PostgresDatabase;
 
 use crate::config::{Config, DatabaseType};
 use async_trait::async_trait;
@@ -272,5 +269,3 @@ impl DatabaseManager {
         self.db.read().await.get_unique_channel_count().await
     }
 }
-
-use async_trait::async_trait;

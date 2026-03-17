@@ -35,6 +35,7 @@ pub struct ContextManager {
     is_initialized: Arc<TokioRwLock<bool>>,
     message_cache: Arc<RwLock<HashMap<String, Vec<ContextMessage>>>>,
     max_context_messages: usize,
+    #[allow(dead_code)]
     similarity_threshold: f64,
     enable_semantic_search: bool,
 }
@@ -268,6 +269,7 @@ impl ContextManager {
                             MessageType::Assistant => "assistant".to_string(),
                             _ => "user".to_string(),
                         },
+                        similarity: None,
                         timestamp: Some(msg.created_at),
                         is_recent: true,
                     });
@@ -301,7 +303,7 @@ impl ContextManager {
     pub async fn get_channel_context(&self, channel_id: &str, limit: usize) -> DbResult<Vec<ContextMessage>> {
         let messages = self.database.get_channel_messages(channel_id, limit).await?;
         
-        let mut result: Vec<ContextMessage> = messages
+        let result: Vec<ContextMessage> = messages
             .into_iter()
             .rev()
             .map(|msg| ContextMessage {
@@ -312,6 +314,7 @@ impl ContextManager {
                     MessageType::Assistant => "assistant".to_string(),
                     _ => "user".to_string(),
                 },
+                similarity: None,
                 timestamp: Some(msg.created_at),
                 is_recent: false,
             })

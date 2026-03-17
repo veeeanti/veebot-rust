@@ -1,19 +1,38 @@
 //! veebot - Main entry point
 //! A Discord bot that can search online, provide keyword-based help, and more
 
-use serenity::client::bridge::gateway::GatewayIntents;
-use serenity::client::Context;
-use serenity::framework::StandardFramework;
+use serenity::all::{Context, GatewayIntents, Interaction, Message, Ready};
+use serenity::prelude::EventHandler;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 use veebot::bot::{BotState, handle_interaction, handle_message, handle_ready};
+use veebot::config::DatabaseType;
 use veebot::config::Config;
 use veebot::context::ContextManager;
 use veebot::database::DatabaseManager;
 use veebot::search::SearchService;
+
+struct Handler {
+    state: Arc<BotState>,
+}
+
+#[serenity::async_trait]
+impl EventHandler for Handler {
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        handle_ready(ctx, ready, self.state.clone()).await;
+    }
+
+    async fn message(&self, ctx: Context, msg: Message) {
+        handle_message(ctx, msg, self.state.clone()).await;
+    }
+
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+        handle_interaction(ctx, interaction, self.state.clone()).await;
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -52,28 +71,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize search service
     let search_service = Arc::new(SearchService::new(config.search_engine.clone()));
     
-    // Initialize AI service and check semantic mode
+    // Initialize AI service and semantic mode
     let is_semantic_mode = Arc::new(RwLock::new(false));
     let ai_service = if let (Some(api_key), Some(model)) = (
         config.openrouter_api_key.as_ref(),
         config.ai_model.as_ref(),
     ) {
-        // Initialize database first if enabled
         if config.enable_database {
             if let Err(e) = database.initialize().await {
                 tracing::warn!("Database schema init failed: {}", e);
-            }
-            
-            if config.enable_semantic_search {
-                if let Ok(connected) = database.test_connection().await {
-                    if connected {
-                        if let Ok(initialized) = context_manager.initialize().await {
+            } else if config.enable_semantic_search {
+                match database.test_connection().await {
+                    Ok(true) => match context_manager.initialize().await {
+                        Ok(initialized) => {
                             *is_semantic_mode.write().await = initialized;
                             if initialized {
                                 tracing::info!("Semantic Context Mode ENABLED");
                             }
                         }
-                    }
+                        Err(e) => tracing::warn!("Context manager init failed: {}", e),
+                    },
+                    Ok(false) => tracing::warn!("Database connection test failed"),
+                    Err(e) => tracing::warn!("Database connection test failed: {}", e),
                 }
             }
         }
@@ -103,56 +122,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         last_response_time: Arc::new(RwLock::new(0)),
     });
     
+    if !config.enable_database && config.database_type == DatabaseType::Postgres {
+        tracing::warn!("Postgres is configured but database support is disabled");
+    }
+
+    let intents = GatewayIntents::GUILDS
+        | GatewayIntents::GUILD_MESSAGES
+        | GatewayIntents::MESSAGE_CONTENT
+        | GatewayIntents::GUILD_MESSAGE_REACTIONS
+        | GatewayIntents::GUILD_MEMBERS
+        | GatewayIntents::GUILD_VOICE_STATES
+        | GatewayIntents::GUILD_PRESENCES;
+
     // Create Discord client
     let mut client = serenity::Client::builder(
         &config.discord_token,
-        GatewayIntents::GUILDS
-            | GatewayIntents::GUILD_MESSAGES
-            | GatewayIntents::MESSAGE_CONTENT
-            | GatewayIntents::GUILD_MESSAGE_REACTIONS
-            | GatewayIntents::GUILD_MEMBERS
-            | GatewayIntents::GUILD_VOICE_STATES
-            | GatewayIntents::GUILD_PRESENCES,
+        intents,
     )
-    .framework(StandardFramework::new())
-    .type_cache_size(10_000)
-    .setup(move |ctx| {
-        let state = state.clone();
-        ctx.data.insert::<BotState>(state);
-        
-        // Set up ready handler
-        let ctx_clone = ctx.clone();
-        Box::pin(async move {
-            handle_ready(ctx_clone, serenity::model::gateway::Ready {
-                version: 10,
-                user: serenity::model::user::CurrentUser::from(
-                    serenity::model::id::UserId::new(0),
-                    "veebot".to_string(),
-                    "",
-                    false,
-                    serenity::model::user::UserFlags::empty(),
-                ),
-                guilds: vec![],
-                session_id: "".to_string(),
-                shard: Some((0, 1)),
-                application_id: None,
-            }).await;
-        })
-    })
+    .event_handler(Handler { state })
     .await?;
-    
-    // Set up event handlers
-    let ctx = client.clone();
-    client.on_interaction_create(move |ctx, interaction| {
-        let ctx = ctx.clone();
-        Box::pin(handle_interaction(ctx, interaction))
-    });
-    
-    let ctx = client.clone();
-    client.on_message_create(move |ctx, msg| {
-        let ctx = ctx.clone();
-        Box::pin(handle_message(ctx, msg))
-    });
     
     // Start the bot
     tracing::info!("Starting Discord client...");

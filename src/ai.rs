@@ -1,7 +1,7 @@
 //! AI Service module for veebot
 //! Handles OpenRouter API integration for AI responses
 
-use crate::context::{ContextManager, ContextMessage};
+use crate::context::ContextManager;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -104,6 +104,7 @@ pub struct AiService {
     context_manager: Arc<ContextManager>,
     prompt: String,
     debug: bool,
+    #[allow(dead_code)]
     enable_mentions: bool,
 }
 

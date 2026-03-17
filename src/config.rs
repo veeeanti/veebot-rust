@@ -67,20 +67,94 @@ impl std::str::FromStr for DatabaseType {
     }
 }
 
+impl std::fmt::Display for DatabaseType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DatabaseType::Sqlite => f.write_str("sqlite"),
+            DatabaseType::Postgres => f.write_str("postgres"),
+        }
+    }
+}
+
 impl Config {
+    /// Find the project root by looking for Cargo.toml
+    fn find_project_root() -> Option<std::path::PathBuf> {
+        let mut path = std::env::current_dir().ok()?;
+        
+        // Look upwards for Cargo.toml
+        loop {
+            if path.join("Cargo.toml").exists() {
+                return Some(path);
+            }
+            if !path.pop() {
+                break;
+            }
+        }
+        None
+    }
+
+    /// Load .env file manually from the given path
+    fn load_env_file(path: &std::path::Path) -> Result<(), std::io::Error> {
+        let contents = std::fs::read_to_string(path)?;
+        for line in contents.lines() {
+            let line = line.trim();
+            // Skip empty lines and comments
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            // Parse KEY=VALUE format
+            if let Some((key, value)) = line.split_once('=') {
+                let key = key.trim();
+                let value = value.trim();
+                // Remove surrounding quotes if present
+                let value = value.trim_matches('"').trim_matches('\'');
+                std::env::set_var(key, value);
+            }
+        }
+        Ok(())
+    }
+
     pub fn from_env() -> Result<Self, config::ConfigError> {
-        dotenv::dotenv().ok();
+        // Try to find project root and load .env from there
+        let project_root = Self::find_project_root();
+        let env_path = project_root.as_ref().map(|p| p.join(".env"));
+        
+        let env_loaded = if let Some(ref path) = env_path {
+            Self::load_env_file(path).is_ok()
+        } else {
+            dotenv::dotenv().is_ok()
+        };
+        
+        if let Some(ref path) = env_path {
+            tracing::info!("Loading .env from: {:?}", path);
+        }
+        tracing::info!("dotenv loaded: {}", env_loaded);
         
         let database_type_str = env::var("DATABASE_TYPE").unwrap_or_else(|_| "sqlite".to_string());
         let database_type: DatabaseType = database_type_str.parse().unwrap_or_default();
+        
+        let openrouter_api_key = env::var("OPENROUTER_API_KEY").ok();
+        let ai_model = env::var("AI_MODEL").ok();
+        
+        // Debug logging for AI config
+        if openrouter_api_key.is_some() {
+            tracing::info!("OPENROUTER_API_KEY loaded: present");
+        } else {
+            tracing::warn!("OPENROUTER_API_KEY is missing or empty!");
+        }
+        if ai_model.is_some() {
+            tracing::info!("AI_MODEL loaded: {}", ai_model.as_ref().unwrap());
+        } else {
+            tracing::warn!("AI_MODEL is missing or empty!");
+        }
         
         Ok(Config {
             discord_token: env::var("DISCORD_TOKEN").unwrap_or_default(),
             guild_id: env::var("GUILD_ID").ok(),
             channel_id: env::var("CHANNEL_ID").ok(),
             local: env::var("LOCAL").map(|v| v == "true").unwrap_or(false),
-            ai_model: env::var("AI_MODEL").ok(),
-            openrouter_api_key: env::var("OPENROUTER_API_KEY").ok(),
+            ai_model,
+            openrouter_api_key,
             random_response_chance: env::var("RANDOM_RESPONSE_CHANCE")
                 .ok()
                 .and_then(|v| v.parse().ok())

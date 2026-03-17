@@ -41,10 +41,6 @@ struct UnionCraxGame {
     source: Option<String>,
 }
 
-/// Download stats from UnionCrax
-#[derive(Debug, Deserialize)]
-struct DownloadStats(serde_json::Value);
-
 /// Web search result
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebSearchResult {
