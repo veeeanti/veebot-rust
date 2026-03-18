@@ -15,6 +15,32 @@ use veebot::context::ContextManager;
 use veebot::database::DatabaseManager;
 use veebot::search::SearchService;
 
+/// Random statuses for the bot
+const RANDOM_STATUSES: &[&str] = &[
+    "no dont do that, dont stick your hand in",
+    "no tennis balls",
+    "contact @vee.anti for help or smth",
+    "I'm just doing this to learn pretty much.",
+    "meow",
+    "welcome to the machine",
+    "ＬＥＴ＇Ｓ ＡＬＬ ＬＯＶＥ ＬＡＩＮ",
+    "Check out union-crax.xyz!",
+    "I am not a cat.",
+    "Check out vee-anti.xyz!",
+    "I'm written in Rust now! Fuck JavaScript!",
+    "Quake III Arena"
+  ];
+
+/// Generate a random index for status selection
+fn rand_index() -> usize {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .subsec_nanos();
+    (nanos as usize) % RANDOM_STATUSES.len()
+}
+
 struct Handler {
     state: Arc<BotState>,
 }
@@ -22,6 +48,11 @@ struct Handler {
 #[serenity::async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
+        // Set random status on startup
+        let status = RANDOM_STATUSES[rand_index()];
+        let activity = serenity::all::ActivityData::playing(status);
+        ctx.set_activity(Some(activity));
+        
         handle_ready(ctx, ready, self.state.clone()).await;
     }
 

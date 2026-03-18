@@ -536,13 +536,45 @@ pub async fn handle_message(ctx: Context, msg: Message, state: Arc<BotState>) {
     
     // Check if we should respond
     let should_respond = {
-        let mentioned = msg.mentions.iter().any(|user| user.id == ctx.cache.current_user().id);
-        let correct_channel = state.config.channel_id.as_ref()
-            .map(|c| c == &msg.channel_id.to_string())
-            .unwrap_or(false);
+        // Get the bot's user ID
+        let bot_id = ctx.cache.current_user().id;
+        
+        // Check for mentions in the message (explicit mentions)
+        let explicitly_mentioned = msg.mentions.iter().any(|user| user.id == bot_id);
+        
+        // Also check if the bot is mentioned in the message content (e.g., <@123456789>)
+        let mention_format = format!("<@{}{}", bot_id, ">");
+        let content_mentioned = msg.content.contains(&mention_format) 
+            || msg.content.contains(&format!("<@!{}>", bot_id));
+        
+        let mentioned = explicitly_mentioned || content_mentioned;
+        
+        // Debug logging for mentions
+        if state.config.debug && (explicitly_mentioned || content_mentioned) {
+            tracing::debug!("Bot mentioned! explicit: {}, content: {}", explicitly_mentioned, content_mentioned);
+        }
+        
+        // Check for server-specific AI channel from database
+        let correct_channel = if let Some(guild_id) = msg.guild_id {
+            let guild_id_str = guild_id.to_string();
+            if let Ok(Some(ai_channel)) = state.database.get_server_setting(&guild_id_str, "ai_channel").await {
+                ai_channel == msg.channel_id.to_string()
+            } else {
+                // Fallback to global config if no server setting
+                state.config.channel_id.as_ref()
+                    .map(|c| c == &msg.channel_id.to_string())
+                    .unwrap_or(false)
+            }
+        } else {
+            // DM or no guild - use global config
+            state.config.channel_id.as_ref()
+                .map(|c| c == &msg.channel_id.to_string())
+                .unwrap_or(false)
+        };
         
         if mentioned {
-            true
+            // Always respond to mentions if enable_mentions is true
+            state.config.enable_mentions
         } else if correct_channel {
             let last_time = *state.last_response_time.read().await;
             let current_time = std::time::SystemTime::now()
@@ -566,6 +598,28 @@ pub async fn handle_message(ctx: Context, msg: Message, state: Arc<BotState>) {
             return;
         };
         
+        // Get the bot's user ID for cleaning mentions
+        let bot_id = ctx.cache.current_user().id;
+        
+        // Clean the message content by removing bot mentions
+        let mut user_input = msg.content.clone();
+        let bot_id_str = bot_id.to_string();
+        let bot_name = ctx.cache.current_user().name.clone();
+        
+        // Remove <@id> and <@!id> mentions using string concatenation
+        let mention1 = format!("<@{}", &bot_id_str) + ">";
+        let mention2 = format!("<@!{}>", &bot_id_str);
+        user_input = user_input.replace(&mention1, "");
+        user_input = user_input.replace(&mention2, "");
+        // Remove @username mention
+        user_input = user_input.replace(&format!("@{}", &bot_name), "");
+        user_input = user_input.trim().to_string();
+        
+        // Skip if no actual content after removing mention
+        if user_input.is_empty() {
+            return;
+        }
+        
         // Get image attachments
         let image_urls: Option<Vec<String>> = msg.attachments.iter()
             .filter(|a| a.content_type.as_ref().map(|c| c.starts_with("image/")).unwrap_or(false))
@@ -578,7 +632,7 @@ pub async fn handle_message(ctx: Context, msg: Message, state: Arc<BotState>) {
         let _ = msg.channel_id.broadcast_typing(&ctx);
         
         let reply = ai_service.generate_response(
-            &msg.content,
+            &user_input,
             &msg.channel_id.to_string(),
             msg.guild_id.map(|g| g.to_string()).as_deref(),
             &msg.id.to_string(),
